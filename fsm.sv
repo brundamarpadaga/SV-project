@@ -51,8 +51,8 @@ always_comb
 			end
 		else
 			begin
-				CS0=~(~(A[15:8] & ~A[7:4]) & IOM);
-				CS1=~(~(A[15:13] & A[12:10] & ~A[9]) & IOM);
+				CS0=~((A[15:8] & ~A[7:4]) & IOM);
+				CS1=~((~A[15:13] & A[12:10] & ~A[9]) & IOM);
 			end
 	
 		{OE,WD} = 2'b11;
