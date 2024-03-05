@@ -20,7 +20,6 @@ logic INTA;
 logic ALE;
 logic DTR;
 logic DEN;
-logic OE,WD;
 logic IO_CS0,IO_CS1;
 logic M_CS0,M_CS1;
 

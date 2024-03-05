@@ -23,7 +23,7 @@ always_comb
 	begin
 		case(current_state)
 		T1: begin
-				if(CS && ALE)
+				if(!CS && ALE)
 					next_state=T2;
 				else
 					next_state=T1;
@@ -36,7 +36,7 @@ always_comb
 			end
 		R: next_state=T4;
 		W: next_state=T4;
-		T4: begin if(CS && ALE)
+		T4: begin if(!CS && ALE)
 				next_state=T2;
 			else
 				next_state=T1;
