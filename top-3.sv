@@ -1,5 +1,5 @@
 module top;
-
+parameter M = 0;
 bit CLK = '0;
 bit MNMX = '1;
 bit TEST = '1;
@@ -23,15 +23,16 @@ logic DEN;
 logic IO_CS0,IO_CS1;
 logic M_CS0,M_CS1;
 
-
 logic [19:0] Address;
 wire [7:0]  Data;
 
 Intel8088 P(CLK, MNMX, TEST, RESET, READY, NMI, INTR, HOLD, AD, A, HLDA, IOM, WR, RD, SSO, INTA, ALE, DTR, DEN);
-IOM M0 	  (CLK,RESET,Address,M_CS0,RD,WR,ALE);
-IOM M1 	  (CLK,RESET,Address,M_CS1,RD,WR,ALE);
-IOM IO_0  (CLK,RESET,Address,IO_CS0,RD,WR,ALE);
-IOM IO_1  (CLK,RESET,Address,IO_CS1,RD,WR,ALE);
+
+//Instantiate 4 Modules
+IOM #(.M(0),.size(2**19)) M0 (CLK,RESET,Address,M_CS0,RD,WR,ALE,Data);
+IOM #(.M(1),.size(2**19)) M1 (CLK,RESET,Address,M_CS1,RD,WR,ALE,Data);
+IOM #(.M(2),.size(2**4)) IO_0 (CLK,RESET,Address,IO_CS0,RD,WR,ALE,Data);
+IOM #(.M(3),.size(2**9)) IO_1 (CLK,RESET,Address,IO_CS1,RD,WR,ALE,Data);
 
 // 8282 Latch to latch bus address
 always_latch
@@ -45,9 +46,9 @@ assign Data =  (DTR & ~DEN) ? AD   : 'z;
 assign AD   = (~DTR & ~DEN) ? Data : 'z;
 
 //Chipselect Logic
-assign M_CS0=~(Address[19] & ~IOM);							//Active Low
-assign M_CS1=~(~Address[19] & ~IOM);							//Active Low
-assign IO_CS0=~((Address[15:8] & ~Address[7:4]) & IOM);				//Active Low
+assign M_CS0=~(Address[19] & ~IOM);											//Active Low
+assign M_CS1=~(~Address[19] & ~IOM);										//Active Low
+assign IO_CS0=~((Address[15:8] & ~Address[7:4]) & IOM);						//Active Low
 assign IO_CS1=~((~Address[15:13] & Address[12:10] & ~Address[9]) & IOM);	//Active Low
 
 always #50 CLK = ~CLK;
