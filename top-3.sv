@@ -29,8 +29,8 @@ wire [7:0]  Data;
 Intel8088 P(CLK, MNMX, TEST, RESET, READY, NMI, INTR, HOLD, AD, A, HLDA, IOM, WR, RD, SSO, INTA, ALE, DTR, DEN);
 
 //Instantiate 4 Modules
-IOM #(.M(0),.size(2**19)) M0 (CLK,RESET,Address,M_CS0,RD,WR,ALE,Data);
-IOM #(.M(1),.size(2**19)) M1 (CLK,RESET,Address,M_CS1,RD,WR,ALE,Data);
+IOM #(.M(0),.size(2**19)) Mem0 (CLK,RESET,Address,M_CS0,RD,WR,ALE,Data);
+IOM #(.M(1),.size(2**19)) Mem1 (CLK,RESET,Address,M_CS1,RD,WR,ALE,Data);
 IOM #(.M(2),.size(2**4)) IO_0 (CLK,RESET,Address,IO_CS0,RD,WR,ALE,Data);
 IOM #(.M(3),.size(2**9)) IO_1 (CLK,RESET,Address,IO_CS1,RD,WR,ALE,Data);
 

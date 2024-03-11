@@ -7,12 +7,8 @@ inout logic [7:0] Data;
 logic OE,WD;
 
 typedef enum logic[4:0]{T1 = 5'b00001, T2 = 5'b00010, R = 5'b00100, W = 5'b01000, T4 = 5'b10000} states;
-logic [19:0] A;
 states next_state,current_state;
 
-assign A = Address;
-
-genvar i;
 generate
 	if(M==0)
 		M0 #(size) Mem0(clk,rst,Address,Data,OE,WD);
@@ -78,20 +74,21 @@ input logic [19:0] Address;
 inout logic [7:0] Data;
 
 logic [7:0] M[2*size-1:size];
-logic [7:0] data_internal;
+logic [7:0] tristate_buffer;
 
 initial begin
 	$readmemh("init.txt",M);
 end
 
-assign data_internal = M[Address];
-assign Data = !OE?data_internal:'z;
+assign Data = !OE ? tristate_buffer : 'z;
     
     always_ff @(posedge clk) begin
         if (!WD && OE)
             M[Address] <= Data;
 		else
 			M[Address] <= M[Address];
+			
+		tristate_buffer <= M[Address];
     end
 endmodule
 
@@ -102,69 +99,72 @@ input logic [19:0] Address;
 inout logic [7:0] Data;
 
 logic [7:0] M[size-1:0];
-logic [7:0] data_internal;
+logic [7:0] tristate_buffer;
 
 initial begin
 	$readmemh("init.txt",M);
 end
 
-assign data_internal = M[Address];
-assign Data = !OE?data_internal:'z;
+assign Data = !OE ? tristate_buffer : 'z;
     
     always_ff @(posedge clk) begin
-        if (!WD)
+        if (!WD && OE)
             M[Address] <= Data;
 		else
 			M[Address] <= M[Address];
+			
+		tristate_buffer <= M[Address];
     end
 endmodule
 
 module I_0(clk,rst,Address,Data,OE,WD);
-parameter size = 2**19;
+parameter size = 2**4;
 localparam K = 16'hFF00;
 input logic clk,rst,OE,WD;
 input logic [19:0] Address;
 inout logic [7:0] Data;
 
 logic [7:0] I[K+size-1:K];
-logic [7:0] data_internal;
+logic [7:0] tristate_buffer;
 
 initial begin
-	$readmemh("IO_init0.txt",I);
+	$readmemh("init.txt",I);
 end
 
-assign data_internal = I[Address];
-assign Data = !OE?data_internal:'z;
+assign Data = !OE ? tristate_buffer : 'z;
     
     always_ff @(posedge clk) begin
-        if (!WD)
+        if (!WD && OE)
             I[Address] <= Data;
 		else
 			I[Address] <= I[Address];
+			
+		tristate_buffer <= I[Address];
     end
 endmodule
 
 module I_1(clk,rst,Address,Data,OE,WD);
-parameter size = 2**19;
+parameter size = 2**9;
 localparam K = 16'h1C00;
 input logic clk,rst,OE,WD;
 input logic [19:0] Address;
 inout logic [7:0] Data;
 
 logic [7:0] I[K+size-1:K];  
-logic [7:0] data_internal;
+logic [7:0] tristate_buffer;
 
 initial begin
-	$readmemh("IO_init1.txt",I);
+	$readmemh("init.txt",I);
 end
 
-assign data_internal = I[Address];
-assign Data = !OE?data_internal:'z;
+assign Data = !OE ? tristate_buffer : 'z;
     
     always_ff @(posedge clk) begin
-        if (!WD)
+        if (!WD && OE)
             I[Address] <= Data;
 		else
 			I[Address] <= I[Address];
+			
+		tristate_buffer <= I[Address];
     end
 endmodule
