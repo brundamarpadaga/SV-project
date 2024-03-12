@@ -60,11 +60,11 @@ input logic clk,rst,OE,WD;
 input logic [19:0] Address;
 inout logic [7:0] Data;
 
-logic [$clog2(size)-1:0] AR;
+logic [$clog2(size)-1:0] AR;	//using least significant bits of Address
 logic [7:0] M[size-1:0];
 
 initial begin
-	$readmemh("init.txt",M);
+	$readmemh("init.txt",M);	//Initialising the memory array
 end
 
 assign AR = Address;
