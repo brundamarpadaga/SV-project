@@ -78,7 +78,7 @@ wire  [7:0] Data;
 
 Intel8088Pins pins (  .CLK(CLK) , .RESET(RESET) );
 
-Intel8088 P(.pins(pins.Processor));
+Intel8088 P(pins.Processor);
 
 //Instantiate 4 Modules
 IOM #(.size(2**19)) Mem0 (Address,Data,M_CS0,pins.Peripheral);
