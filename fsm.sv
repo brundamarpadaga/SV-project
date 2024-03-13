@@ -1,18 +1,20 @@
-module IOM(clk,rst,Address,CS,RD,WR,ALE,Data);
+module IOM(Address,Data,CS, pins);
 parameter size = 2**19;
 input logic [19:0] Address;
-input logic clk,rst,CS,RD,WR,ALE;
-inout logic [7:0] Data;
+inout logic [7:0]Data;
+input logic CS;
+
+Intel8088Pins pins;
 logic OE,WD;
 
 typedef enum logic[4:0]{T1 = 5'b00001, T2 = 5'b00010, R = 5'b00100, W = 5'b01000, T4 = 5'b10000} states;
 states next_state,current_state;
 
-Mem #(.size(size)) MEM(clk,rst,Address,Data,OE,WD);
+Mem #(.size(size)) MEM(pins.CLK,pins.RESET,Address,Data,OE,WD);
 
-always_ff @(posedge clk)
+always_ff @(posedge pins.CLK)
 	begin
-		if(rst)
+		if(pins.RESET)
 			current_state<=T1;
 		else
 			current_state<=next_state;
@@ -23,15 +25,15 @@ always_comb
 		
 		unique case(current_state)                 
 			T1: begin
-					if(!CS && ALE)
+					if(!CS && pins.ALE)
 						next_state=T2;
 					else
 						next_state=T1;
 				end
 			T2: begin
-					if(!RD)
+					if(!pins.RD)
 						next_state=R;
-					else if(!WR)
+					else if(!pins.WR)
 						next_state=W;
 				end
 			R: next_state = T4;
