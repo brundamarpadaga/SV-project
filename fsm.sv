@@ -1,7 +1,5 @@
-module IOM(Address,Data,CS, pins);
+module IOM(CS, pins);
 parameter size = 2**19;
-input logic [19:0] Address;
-inout logic [7:0]Data;
 input logic CS;
 
 Intel8088Pins pins;
@@ -10,7 +8,7 @@ logic OE,WD;
 typedef enum logic[4:0]{T1 = 5'b00001, T2 = 5'b00010, R = 5'b00100, W = 5'b01000, T4 = 5'b10000} states;
 states next_state,current_state;
 
-Mem #(.size(size)) MEM(pins.CLK,pins.RESET,Address,Data,OE,WD);
+Mem #(.size(size)) MEM(pins.CLK,pins.RESET,pins.Address,pins.Data,OE,WD);
 
 always_ff @(posedge pins.CLK)
 	begin
