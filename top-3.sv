@@ -26,10 +26,10 @@ assign i.Data =  (i.DTR & ~i.DEN) ? i.AD   : 'z;
 assign i.AD   = (~i.DTR & ~i.DEN) ? i.Data : 'z;
 
 //Chipselect Logic
-assign M_CS0 = ~(~i.Address[19] & ~(0));											//Active Low
-assign M_CS1 = ~(i.Address[19] & ~(0));										//Active Low
-assign IO_CS0 = ~((i.Address[15:8] & ~i.Address[7:4]) & 0);						//Active Low
-assign IO_CS1 = ~((~i.Address[15:13] & i.Address[12:10] & ~i.Address[9]) & 0);	//Active Low
+assign M_CS0 = ~(~i.Address[19] & ~i.IOM);											//Active Low
+assign M_CS1 = ~(i.Address[19] & ~i.IOM);										//Active Low
+assign IO_CS0 = ~((i.Address[15:8] & ~i.Address[7:4]) & i.IOM);						//Active Low
+assign IO_CS1 = ~((~i.Address[15:13] & i.Address[12:10] & ~i.Address[9]) & i.IOM);	//Active Low
 
 always #50 CLK = ~CLK;
 
