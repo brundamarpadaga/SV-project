@@ -1,5 +1,6 @@
 interface  Intel8088Pins (input logic CLK,RESET);  
 
+	//8088 Signals
 	logic MNMX = '1;
 	logic TEST = '1;
 	logic READY = '1;
@@ -19,8 +20,9 @@ interface  Intel8088Pins (input logic CLK,RESET);
 	logic ALE;
 	logic DTR;
 	logic DEN;
-	
-	logic [19:0] Address;
+
+	//Address and Data bus
+	logic [19:0] Address;	
 	wire [7:0]  Data;
 
     modport  Processor (input CLK, RESET, MNMX,TEST,READY,NMI,INTR,HOLD,

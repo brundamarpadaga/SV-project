@@ -1,12 +1,12 @@
 module IOM(Intel8088Pins i, input CS);
 parameter size = 2**19;
 
-logic OE,WD;
+logic OE,WD;	//Active Low OutputEnable and WriteData signals to the memory 
 
 typedef enum logic[4:0]{T1 = 5'b00001, T2 = 5'b00010, R = 5'b00100, W = 5'b01000, T4 = 5'b10000} states;
 states next_state,current_state;
 
-Mem #(.size(size)) MEM(i.CLK,i.RESET,i.Address,i.Data,OE,WD);
+Mem #(.size(size)) MEM(i.CLK,i.RESET,i.Address,i.Data,OE,WD);		//Instantiate actual Memory/IO depending on it's size
 
 always_ff @(posedge i.CLK)
     begin
@@ -15,10 +15,10 @@ always_ff @(posedge i.CLK)
         else
             current_state<=next_state;
     end
-    
+
+//State Transition logic for FSM   
 always_comb
     begin
-        
         unique case(current_state)                 
             T1: begin
                     if(!CS && i.ALE)
@@ -38,15 +38,16 @@ always_comb
         default: next_state = T1;
         endcase
     end
-    
+
+//FSM Output assignment    
 always_comb
     begin    
         {OE,WD} = 2'b11;
         case(current_state)
             T1: {OE,WD} = 2'b11;
             T2: {OE,WD} = 2'b11;
-            R:  {OE,WD} = 2'b01;
-            W:  {OE,WD} = 2'b10;
+            R:  {OE,WD} = 2'b01;	//Read
+            W:  {OE,WD} = 2'b10;	//Write
             T4: {OE,WD} = 2'b11;
         endcase
     end 
@@ -62,11 +63,11 @@ logic [$clog2(size)-1:0] AR;
 logic [7:0] M[size-1:0];
 
 initial begin
-    $readmemh("init.txt",M);
+    $readmemh("init.txt",M);		//Initialise memory
 end
 
-assign AR = Address;
-assign Data = !OE ? M[AR] : 'z;
+assign AR = Address;				//Address Register to store lower order address
+assign Data = !OE ? M[AR] : 'z;		//Tristate buffer
     
     always_ff @(posedge CLK) begin
         if (!WD)

@@ -2,14 +2,14 @@ module top;
 logic CLK = '0;
 logic RESET = '0;
 
-logic IO_CS0,IO_CS1;
-logic M_CS0,M_CS1;
+logic IO_CS0,IO_CS1;	//IO Chip selects
+logic M_CS0,M_CS1;		//Memory Chip selects
 	
 Intel8088Pins i(CLK,RESET);
 Intel8088 P(.i(i.Processor)); 
 
-//Instantiate 4 Modules
-IOM #(.size(2**19)) Mem0 (.i(i.Peripheral),.CS(M_CS0));
+//Instantiate 4 Modules (IO and Memory)
+IOM #(.size(2**19)) Mem0 (.i(i.Peripheral),.CS(M_CS0));		
 IOM #(.size(2**19)) Mem1 (.i(i.Peripheral),.CS(M_CS1));
 IOM #(.size(2**4)) IO_0 (.i(i.Peripheral),.CS(IO_CS0));
 IOM #(.size(2**9)) IO_1 (.i(i.Peripheral),.CS(IO_CS1));
@@ -26,10 +26,10 @@ assign i.Data =  (i.DTR & ~i.DEN) ? i.AD   : 'z;
 assign i.AD   = (~i.DTR & ~i.DEN) ? i.Data : 'z;
 
 //Chipselect Logic
-assign M_CS0 = ~(~i.Address[19] & ~i.IOM);											//Active Low
-assign M_CS1 = ~(i.Address[19] & ~i.IOM);										//Active Low
-assign IO_CS0 = ~((i.Address[15:8] & ~i.Address[7:4]) & i.IOM);						//Active Low
-assign IO_CS1 = ~((~i.Address[15:13] & i.Address[12:10] & ~i.Address[9]) & i.IOM);	//Active Low
+assign M_CS0 = ~(~i.Address[19] & ~i.IOM);											//Active Low Mem0 Chipselect
+assign M_CS1 = ~(i.Address[19] & ~i.IOM);											//Active Low Mem1 Chipselect
+assign IO_CS0 = ~((i.Address[15:8] & ~i.Address[7:4]) & i.IOM);						//Active Low IO1  Chipselect
+assign IO_CS1 = ~((~i.Address[15:13] & i.Address[12:10] & ~i.Address[9]) & i.IOM);	//Active Low IO2  Chipselect
 
 always #50 CLK = ~CLK;
 
